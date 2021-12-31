@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00cfb0e9707e89b468f5bc118e538137, type: 3}
+  m_Name: 90bpm
+  m_EditorClassIdentifier: 
+  BeatsPerMinute: 90
+  Beats: ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0100000000000000020000000000000003000000ffffffff01000000000000000000000001000000ffffffff0200000001000000020000000200000003000000ffffffff02000000030000000300000003000000ffffffffffffffff0200000002000000ffffffffffffffff0200000002000000ffffffff03000000030000000000000001000000ffffffffffffffff000000000300000003000000ffffffff0000000001000000000000000000000002000000ffffffff0100000003000000010000000300000000000000
+  _preRoll: 10
+  _minBlock: 2
+  _maxBlock: 5
+  _minInterval: 1
+  _maxInterval: 2
+  _blocks: 10
