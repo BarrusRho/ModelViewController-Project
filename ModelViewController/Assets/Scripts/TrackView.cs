@@ -24,6 +24,32 @@ namespace ModelViewController
         public void Init(Track track)
         {
             _rectTransform = (RectTransform)transform;
+
+            foreach (int b in track.Beats)
+            {
+                GameObject beats;
+
+                switch (b)
+                {
+                    case 0:
+                        beats = _left.gameObject;
+                        break;
+                    case 1:
+                        beats = _right.gameObject;
+                        break;
+                    case 2:
+                        beats = _up.gameObject;
+                        break;
+                    case 3:
+                        beats = _down.gameObject;
+                        break;
+                    default:
+                        beats = _empty.gameObject;
+                        break;
+                }
+                Transform view = GameObject.Instantiate(beats, transform).transform;
+                view.SetAsFirstSibling();
+            }
         }
 
         private void Start()
