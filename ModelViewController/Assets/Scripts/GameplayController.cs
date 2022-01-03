@@ -14,6 +14,7 @@ namespace ModelViewController
         [Tooltip("Beats Track to play")]
         [SerializeField] private Track _track;
         private bool _isCompleted;
+        private bool _hasPlayed;
         ///<summary>
         ///The current Track.
         ///</summary> 
@@ -35,6 +36,11 @@ namespace ModelViewController
 
         private void Update()
         {
+            if (_hasPlayed || _isCompleted)
+            {
+                return;
+            }
+
             if (Input.GetKeyDown(_left))
             {
                 PlayBeat(0);
@@ -55,17 +61,17 @@ namespace ModelViewController
         #endregion
 
         #region Gameplay
-        private int _current;
-        public int Current
+        private int _currentBeat;
+        public int CurrentBeat
         {
-            get { return _current;}
+            get { return _currentBeat; }
             set
             {
-                if (value != _current)
+                if (value != _currentBeat)
                 {
-                    _current = value;
+                    _currentBeat = value;
 
-                    if (_current == _track.Beats.Count)
+                    if (_currentBeat == _track.Beats.Count)
                     {
                         CancelInvoke("NextBeat");
                         _isCompleted = true;
@@ -76,12 +82,31 @@ namespace ModelViewController
         private void PlayBeat(int input)
         {
             Debug.Log(input);
+
+            if (_track.Beats[CurrentBeat] == -1)
+            {
+                Debug.Log(string.Format("{0} played out of time", input));
+            }
+            else if (_track.Beats[CurrentBeat] == input)
+            {
+                Debug.Log(string.Format("{0} played correctly", input));
+            }
+            else
+            {
+                Debug.Log(string.Format("{0} played, {1} is expected", input, _track.Beats[CurrentBeat]));
+            }
         }
 
         private void NextBeat()
         {
             Debug.Log("Tick");
-            Current++;
+
+            if (!_hasPlayed && _track.Beats[CurrentBeat] != -1)
+            {
+                Debug.Log(string.Format("{0} missed", _track.Beats[CurrentBeat]));
+            }
+            _hasPlayed = false;
+            CurrentBeat++;
         }
         #endregion
     }
