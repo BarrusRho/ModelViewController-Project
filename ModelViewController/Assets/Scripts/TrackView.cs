@@ -21,9 +21,25 @@ namespace ModelViewController
 
         private RectTransform _rectTransform;
 
+        private Vector2 _position;
+        public float position
+        {
+            get { return _position.y; }
+            set
+            {
+                if (value != _position.y)
+                {
+                    _position.y = value;
+                    _rectTransform.anchoredPosition = _position;
+                }
+            }
+        }
+
+
         public void Init(Track track)
         {
             _rectTransform = (RectTransform)transform;
+            _position = _rectTransform.anchoredPosition;
 
             foreach (int b in track.Beats)
             {
@@ -55,6 +71,11 @@ namespace ModelViewController
         private void Start()
         {
             Init(_track);
+        }
+
+        private void Update()
+        {
+            position -= Time.deltaTime * 100f;
         }
     }
 }
