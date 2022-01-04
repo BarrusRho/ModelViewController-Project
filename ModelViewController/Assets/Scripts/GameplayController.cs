@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 namespace ModelViewController
@@ -13,20 +14,46 @@ namespace ModelViewController
         [Header("Track")]
         [Tooltip("Beats Track to play")]
         [SerializeField] private Track _track;
-        private bool _isCompleted;
-        private bool _hasPlayed;
+        private WaitForSeconds _waitAndStop;
+        private bool _isLevelCompleted;
+        private bool _hasBeatPlayed;
         ///<summary>
         ///The current Track.
         ///</summary> 
         public Track Track { get { return _track; } }
         public float SecondsPerBeat { get; private set; }
         public float BeatsPerSeconds { get; private set; }
+        private TrackView _trackView;
+        private static GameplayController _instance;
+        public static GameplayController Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = (GameplayController)GameObject.FindObjectOfType(typeof(GameplayController));
+                }
+                return _instance;
+            }
+        }
 
         #region MonoBehaviour Methods
         private void Awake()
         {
+            _instance = this;
             SecondsPerBeat = Track.BeatsPerMinute / 60f;
             BeatsPerSeconds = 60f / Track.BeatsPerMinute;
+            _waitAndStop = new WaitForSeconds(BeatsPerSeconds * 2);
+            _trackView = FindObjectOfType<TrackView>();
+            if (_trackView == null)
+            {
+                Debug.LogWarning("No TrackView found in current scene");
+            }
+        }
+
+        private void OnDestroy()
+        {
+            _instance = null;
         }
 
         private void Start()
@@ -36,7 +63,7 @@ namespace ModelViewController
 
         private void Update()
         {
-            if (_hasPlayed || _isCompleted)
+            if (_hasBeatPlayed || _isLevelCompleted)
             {
                 return;
             }
@@ -74,39 +101,49 @@ namespace ModelViewController
                     if (_currentBeat == _track.Beats.Count)
                     {
                         CancelInvoke("NextBeat");
-                        _isCompleted = true;
+                        _isLevelCompleted = true;
+                        StartCoroutine(WaitAndStop());
                     }
                 }
             }
         }
         private void PlayBeat(int input)
         {
-            Debug.Log(input);
+            _hasBeatPlayed = true;
 
             if (_track.Beats[CurrentBeat] == -1)
             {
-                Debug.Log(string.Format("{0} played out of time", input));
+                //Debug.Log(string.Format("{0} played out of time", input));
             }
             else if (_track.Beats[CurrentBeat] == input)
             {
-                Debug.Log(string.Format("{0} played correctly", input));
+                //Debug.Log(string.Format("{0} played correctly", input));
+                _trackView.TriggerBeatView(CurrentBeat, TrackView.Trigger.Correct);
             }
             else
             {
-                Debug.Log(string.Format("{0} played, {1} is expected", input, _track.Beats[CurrentBeat]));
+                //Debug.Log(string.Format("{0} played, {1} is expected", input, _track.Beats[CurrentBeat]));
+                _trackView.TriggerBeatView(CurrentBeat, TrackView.Trigger.Wrong);
             }
         }
 
         private void NextBeat()
         {
-            Debug.Log("Tick");
+            //Debug.Log("Tick");
 
-            if (!_hasPlayed && _track.Beats[CurrentBeat] != -1)
+            if (!_hasBeatPlayed && _track.Beats[CurrentBeat] != -1)
             {
-                Debug.Log(string.Format("{0} missed", _track.Beats[CurrentBeat]));
+                //Debug.Log(string.Format("{0} missed", _track.Beats[CurrentBeat]));
+                _trackView.TriggerBeatView(CurrentBeat, TrackView.Trigger.Missed);
             }
-            _hasPlayed = false;
+            _hasBeatPlayed = false;
             CurrentBeat++;
+        }
+
+        private IEnumerator WaitAndStop()
+        {
+            yield return _waitAndStop;
+            enabled = false;
         }
         #endregion
     }
